@@ -65,41 +65,34 @@ def apply_transformer(image):
 # ============================================================
 @st.cache_resource
 def load_model():
-    """Loading our pretrained VGG16 model"""
+    """Loading our pretrained MobileNet model"""
 
     # -------------------------------------------------------
     # Download model from Google Drive if not already present
     # Replace the ID below with your actual file ID
     # -------------------------------------------------------
-    model_path = "tomato_leaf_detector.pt"
+    model_path = "mobilenet_tomato_leaf_detector.pt"
 
     if not os.path.exists(model_path):
         with st.spinner('Downloading model... (first time only)'):
-            file_id = '1p-TJaOEbaAYmWUHQYWeu4XCssVoHrAnv'
+            file_id = '1845vELPMxnYkqgweZZSmi5DI3hY5rpVj'
             gdown.download(f"https://drive.google.com/uc?id={file_id}", model_path, quiet=False)
 
-    vgg16 = models.vgg16(weights=None)
+    mobilenet = models.mobilenet_v2(weights=None)
 
-    vgg16.classifier = nn.Sequential(
-        nn.Linear(25088, 1024),
-        nn.ReLU(),
-        nn.Dropout(0.5),
-
-        nn.Linear(1024, 512),
-        nn.ReLU(),
-        nn.Dropout(0.5),
-
-        nn.Linear(512, 3)
+    mobilenet.classifier = nn.Sequential(
+        nn.Dropout(0.2),
+        nn.Linear(1280, 3)
     )
 
-    vgg16.load_state_dict(
-        torch.load('tomato_leaf_detector.pt', map_location=device)
+    mobilenet.load_state_dict(
+        torch.load(model_path, map_location=device)
     )
 
-    vgg16 = vgg16.to(device)
-    vgg16.eval()
+    mobilenet = mobilenet.to(device)
+    mobilenet.eval()
 
-    return vgg16
+    return mobilenet
 
 # ============================================================
 # STEP 4 — PREDICTION FUNCTION
@@ -144,7 +137,7 @@ def predict(model, image):
     output = model(image)             # Get raw output probabilities for each class
     _, predicted = torch.max(output, 1)    # Find the index of the highest probability
     probs = torch.softmax(output, dim=1)    # Get probability of each class
-    confidence = probs[0][predicted.item()]   # Get the confidence score for that class
+    confidence = probs[0][predicted.item()].item()   # Get the confidence score for that class
     class_name = CLASS_NAMES[predicted.item()]      # Map index → class name
     return class_name, confidence
 
@@ -155,7 +148,7 @@ def predict(model, image):
 with st.sidebar:
     st.title("ℹ️ About This App")
     st.write(
-        "This app uses a Pretrained VGG16 Model "
+        "This app uses a Pretrained MobileNet Model "
         "fine-tuned on the PlantVillage dataset to detect diseases "
         "in tomato plant leaves."
     )
@@ -246,7 +239,7 @@ if uploaded_file:
 
             except Exception as e:
                 st.error(f"Model not loaded yet. Error: {e}")
-                st.info("💡 Train your model and save it as 'tomato_model.pt' in this folder.")
+                st.info("💡 Make sure 'mobilenet_tomato_leaf_detector.pt' is available or check your Google Drive file ID.")
 
     # ============================================================
     # STEP 9 — RECOMMENDATIONS SECTION

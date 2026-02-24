@@ -1,8 +1,10 @@
-# Dataset
+# Dataset - too large
 PlantVillage/
 
 # Jupyter Notebook Checkpoints
 .ipynb_checkpoints/
 
-# Trained Model (too large for GitHub)
+# Trained Model - hosted on Google Drive instead
 tomato_leaf_detector.pt
+
+mobilenet_tomato_leaf_detector.pt
