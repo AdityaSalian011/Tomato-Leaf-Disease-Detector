@@ -1,0 +1,8 @@
+# Dataset
+PlantVillage/
+
+# Jupyter Notebook Checkpoints
+.ipynb_checkpoints/
+
+# Trained Model (too large for GitHub)
+tomato_leaf_detector.pt
