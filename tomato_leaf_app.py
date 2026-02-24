@@ -67,6 +67,17 @@ def apply_transformer(image):
 def load_model():
     """Loading our pretrained VGG16 model"""
 
+    # -------------------------------------------------------
+    # Download model from Google Drive if not already present
+    # Replace the ID below with your actual file ID
+    # -------------------------------------------------------
+    model_path = "tomato_leaf_detector.pt"
+
+    if not os.path.exists(model_path):
+        with st.spinner('Downloading model... (first time only)'):
+            file_id = '1p-TJaOEbaAYmWUHQYWeu4XCssVoHrAnv'
+            gdown.download(f"https://drive.google.com/uc?id={file_id}", model_path, quiet=False)
+
     vgg16 = models.vgg16(weights=None)
 
     vgg16.classifier = nn.Sequential(
@@ -124,12 +135,12 @@ RECOMMENDATIONS = {
         "- Use neem oil spray as a natural preventive measure."
     )
 }
-1p-TJaOEbaAYmWUHQYWeu4XCssVoHrAnv
 def predict(model, image):
     """
     Pass the preprocessed image to the model and return
     the predicted class name and confidence percentage.
     """
+    
     output = model(image)             # Get raw output probabilities for each class
     _, predicted = torch.max(output, 1)    # Find the index of the highest probability
     probs = torch.softmax(output, dim=1)    # Get probability of each class
