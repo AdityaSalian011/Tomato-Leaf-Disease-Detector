@@ -63,36 +63,36 @@ def apply_transformer(image):
 # prediction. Without this, the model would reload on every interaction,
 # making the app very slow.
 # ============================================================
-@st.cache_resource
-def load_model():
-    """Loading our pretrained MobileNet model"""
+# @st.cache_resource
+# def load_model():
+#     """Loading our pretrained MobileNet model"""
 
-    # -------------------------------------------------------
-    # Download model from Google Drive if not already present
-    # Replace the ID below with your actual file ID
-    # -------------------------------------------------------
-    model_path = "mobilenet_tomato_leaf_detector.pt"
+#     # -------------------------------------------------------
+#     # Download model from Google Drive if not already present
+#     # Replace the ID below with your actual file ID
+#     # -------------------------------------------------------
+#     model_path = "mobilenet_tomato_leaf_detector.pt"
 
-    if not os.path.exists(model_path):
-        with st.spinner('Downloading model... (first time only)'):
-            file_id = '1845vELPMxnYkqgweZZSmi5DI3hY5rpVj'
-            gdown.download(f"https://drive.google.com/uc?id={file_id}", model_path, quiet=False)
+#     if not os.path.exists(model_path):
+#         with st.spinner('Downloading model... (first time only)'):
+#             file_id = '1845vELPMxnYkqgweZZSmi5DI3hY5rpVj'
+#             gdown.download(f"https://drive.google.com/uc?id={file_id}", model_path, quiet=False)
 
-    mobilenet = models.mobilenet_v2(weights=None)
+#     mobilenet = models.mobilenet_v2(weights=None)
 
-    mobilenet.classifier = nn.Sequential(
-        nn.Dropout(0.2),
-        nn.Linear(1280, 3)
-    )
+#     mobilenet.classifier = nn.Sequential(
+#         nn.Dropout(0.2),
+#         nn.Linear(1280, 3)
+#     )
 
-    mobilenet.load_state_dict(
-        torch.load(model_path, map_location=device)
-    )
+#     mobilenet.load_state_dict(
+#         torch.load(model_path, map_location=device)
+#     )
 
-    mobilenet = mobilenet.to(device)
-    mobilenet.eval()
+#     mobilenet = mobilenet.to(device)
+#     mobilenet.eval()
 
-    return mobilenet
+#     return mobilenet
 
 # ============================================================
 # STEP 4 — PREDICTION FUNCTION
@@ -128,6 +128,21 @@ RECOMMENDATIONS = {
         "- Use neem oil spray as a natural preventive measure."
     )
 }
+def load_model():
+    model_path = "mobilenet_tomato_leaf_detector.pt"  
+    
+    mobilenet = models.mobilenet_v2(weights=None)
+    mobilenet.classifier = nn.Sequential(
+        nn.Dropout(0.2),
+        nn.Linear(1280, 3)
+    )
+    mobilenet.load_state_dict(
+        torch.load(model_path, map_location=device)
+    )
+    mobilenet = mobilenet.to(device)
+    mobilenet.eval()
+    return mobilenet
+
 def predict(model, image):
     """
     Pass the preprocessed image to the model and return

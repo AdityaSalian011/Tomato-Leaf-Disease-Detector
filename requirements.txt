@@ -1,5 +1,7 @@
 streamlit
+fastapi
+uvicorn
+python-multipart
 torch
 torchvision
 Pillow
-gdown
