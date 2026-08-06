@@ -3,3 +3,5 @@ PlantVillage/
 
 # Jupyter Notebook Checkpoints
 .ipynb_checkpoints/
+
+.env

@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from tomato_leaf_app import apply_transformer, load_model, predict
 from PIL import Image
 from io import BytesIO
+import os
 
 #Step1: instantiate FastAPI
 app = FastAPI()
@@ -10,7 +11,7 @@ app = FastAPI()
 #Step2: Add CORSMiddleware and origin
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=['*'],
+    allow_origins=['http://localhost:5500', os.getenv("FRONTEND_URL")],
     allow_methods=['*'],
     allow_headers=['*']
 )
