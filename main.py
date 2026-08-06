@@ -38,6 +38,13 @@ async def predict_route(image: UploadFile = File(...)):
         'confidence': float(confidence)
     }
 
+@app.get("/health")
+def health():
+    try:
+        return {"status": "ok"}
+    except Exception as e:
+        return {"status": "asleep", "error": str(e)}
+
 if __name__=='__main__':
     import uvicorn
     uvicorn.run(app, host='0.0.0.0', port=8000)
